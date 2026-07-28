@@ -12,7 +12,7 @@ class ToolRegistry:
             TextTool(),
             WeatherTool()
         ]
-
+    """
     def execute(self, task: str):
 
         for tool in self.tools:
@@ -24,3 +24,24 @@ class ToolRegistry:
             "tool": "Unknown",
             "message": "No suitable tool found."
         }
+        """
+    
+     def execute(self, task: str, trace):
+    
+            trace.add("Searching registered tools.")
+    
+            for tool in self.tools:
+    
+                if tool.can_handle(task):
+    
+                    trace.add(f"{tool.__class__.__name__} matched the request.")
+    
+                    return tool.execute(task, trace)
+    
+            trace.add("No matching tool found.")
+    
+            return {
+                "status": "FAILED",
+                "message": "No suitable tool found.",
+                "trace": trace.get_steps()
+            }
