@@ -1,9 +1,11 @@
+from app.agent.tool_registry import ToolRegistry
+
+
 class AgentController:
+
+    def __init__(self):
+        self.registry = ToolRegistry()
 
     def process(self, task: str):
 
-        return {
-            "status": "SUCCESS",
-            "receivedTask": task,
-            "message": "Agent received the task."
-        }
+        return self.registry.execute(task)
