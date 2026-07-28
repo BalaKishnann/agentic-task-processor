@@ -18,18 +18,24 @@ class AgentController:
         trace.add("Agent started processing.")
 
         response = self.registry.execute(task, trace)
-        db = SessionLocal()
+        try:
+            db = SessionLocal()
 
-        history = TaskHistory(
-            task=task,
-            selected_tool=response["tool"],
-            status=response["status"],
-            result=json.dumps(response["result"]),
-            trace=json.dumps(response["trace"])
-        )
+            history = TaskHistory(
+                task=task,
+                selected_tool=response["tool"],
+                status=response["status"],
+                result=json.dumps(response["result"]),
+                trace=json.dumps(response["trace"])
+            )
 
-        db.add(history)
-        db.commit()
-        db.close()
-        
-        return response
+            db.add(history)
+            db.commit()
+            db.close()
+            
+            print("✅ Task saved successfully")
+            return response
+        except:
+            print(f"❌ Database Error: {ex}")
+        finally:
+            db.close()     
