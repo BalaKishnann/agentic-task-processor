@@ -19,7 +19,8 @@ class CalculatorTool(BaseTool):
 
         return any(word in task for word in keywords)
 
-    def execute(self, task: str):
+    """def execute(self, task: str):"""
+    def execute(self, task: str, trace):
 
         expression = self.parse_expression(task)
 
