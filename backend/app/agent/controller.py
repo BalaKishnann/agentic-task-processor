@@ -31,11 +31,14 @@ class AgentController:
 
             db.add(history)
             db.commit()
-            db.close()
+            db.refresh(history)
             
-            print("✅ Task saved successfully")
+            print(f"✅ Task saved successfully, ID={history.id}")
             return response
-        except:
-            print(f"❌ Database Error: {ex}")
+        except Exception as ex:
+            db.rollback()
+            print(f"❌ Database Error: {type(ex).__name__} {ex}")
+            raise
+            
         finally:
             db.close()     
