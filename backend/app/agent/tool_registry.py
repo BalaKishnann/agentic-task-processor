@@ -11,19 +11,22 @@ class ToolRegistry:
         WeatherTool()
       ]
 
-   def execute(self, task: str, trace):
-    
-    trace.add("Searching registered tools.")
+  def execute(self, task: str, trace):
 
-    for tool in self.tools:
+        trace.add("Searching registered tools.")
 
-      if tool.can_handle(task):
-        trace.add(f"{tool.__class__.__name__} matched the request.")
-        
-        return tool.execute(task, trace)
+        for tool in self.tools:
+
+            if tool.can_handle(task):
+
+                trace.add(f"{tool.__class__.__name__} matched the request.")
+
+                return tool.execute(task, trace)
+
         trace.add("No matching tool found.")
+
         return {
             "status": "FAILED",
             "message": "No suitable tool found.",
             "trace": trace.get_steps()
-            }
+        }
