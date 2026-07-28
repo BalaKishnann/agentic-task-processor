@@ -23,7 +23,8 @@ class CalculatorTool(BaseTool):
     def execute(self, task: str, trace):
 
         expression = self.parse_expression(task)
-
+        trace.add(f"Expression extracted: {expression}")
+        
         if expression is None:
             return {
                 "tool": "Calculator",
@@ -33,15 +34,18 @@ class CalculatorTool(BaseTool):
 
         try:
             result = eval(expression)
-
+            trace.add("Calculation completed successfully.")
             return {
                 "tool": "Calculator",
                 "status": "SUCCESS",
-                "expression": expression,
-                "result": result
+                "result": {
+                    "expression": expression,
+                    "value": result
+                },
+                "trace": trace.get_steps()
             }
 
-        except Exception as ex:
+         except Exception as ex:
             return {
                 "tool": "Calculator",
                 "status": "FAILED",
