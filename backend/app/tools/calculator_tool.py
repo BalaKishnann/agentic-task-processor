@@ -1,3 +1,5 @@
+import re
+
 from app.tools.base_tool import BaseTool
 
 
@@ -19,7 +21,41 @@ class CalculatorTool(BaseTool):
 
     def execute(self, task: str):
 
-        return {
-            "tool": "Calculator",
-            "message": f"Calculator received: {task}"
-        }
+        expression = self.parse_expression(task)
+
+        if expression is None:
+            return {
+                "tool": "Calculator",
+                "status": "FAILED",
+                "message": "Unable to identify a valid mathematical expression."
+            }
+
+        try:
+            result = eval(expression)
+
+            return {
+                "tool": "Calculator",
+                "status": "SUCCESS",
+                "expression": expression,
+                "result": result
+            }
+
+        except Exception as ex:
+            return {
+                "tool": "Calculator",
+                "status": "FAILED",
+                "message": str(ex)
+            }
+
+    def parse_expression(self, task: str):
+
+        task = task.lower()
+
+        task = task.replace("calculate", "")
+
+        match = re.search(r'(\d+\s*[\+\-\*/]\s*\d+)', task)
+
+        if match:
+            return match.group(1)
+
+        return None
