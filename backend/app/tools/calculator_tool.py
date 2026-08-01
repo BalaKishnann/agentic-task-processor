@@ -19,7 +19,7 @@ class CalculatorTool(BaseTool):
 
         return any(word in task for word in keywords)
 
-      def execute(self, task: str, trace):
+    def execute(self, task: str, trace):
 
         expression = self.parse_expression(task)
         trace.add(f"Expression extracted: {expression}")
@@ -44,7 +44,7 @@ class CalculatorTool(BaseTool):
                 "trace": trace.get_steps()
             }
 
-         except Exception as ex:
+        except Exception as ex:
             return {
                 "tool": "Calculator",
                 "status": "FAILED",
