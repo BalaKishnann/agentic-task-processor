@@ -5,6 +5,8 @@ from app.tools.date_tool import DateTool
 from app.tools.time_tool import TimeTool
 from app.tools.text_analysis_tool import TextAnalysisTool
 from app.tools.file_tool import FileTool
+from app.tools.weather_tool import WeatherTool
+from app.tools.email_tool import EmailTool
 
 class ToolRegistry:
   
@@ -16,7 +18,9 @@ class ToolRegistry:
         DateTool(),
         TimeTool(),
         TextAnalysisTool(),
-        FileTool()        
+        FileTool(),
+        WeatherTool(),
+        EmailTool()       
       ]
 
   def execute(self, task: str, trace):
