@@ -1,6 +1,10 @@
 from app.tools.calculator_tool import CalculatorTool
 from app.tools.text_tool import TextTool
 from app.tools.weather_tool import WeatherTool
+from app.tools.date_tool import DateTool
+from app.tools.time_tool import TimeTool
+from app.tools.text_analysis_tool import TextAnalysisTool
+from app.tools.file_tool import FileTool
 
 class ToolRegistry:
   
@@ -8,7 +12,11 @@ class ToolRegistry:
     self.tools = [
         CalculatorTool(),
         TextTool(),
-        WeatherTool()
+        WeatherTool(),
+        DateTool(),
+        TimeTool(),
+        TextAnalysisTool(),
+        FileTool()        
       ]
 
   def execute(self, task: str, trace):

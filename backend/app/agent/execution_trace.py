@@ -8,3 +8,6 @@ class ExecutionTrace:
 
     def get_steps(self):
         return self.steps
+    
+    def get_trace(self):
+        return self.steps

@@ -1,7 +1,7 @@
 import { useState } from "react";
 import API from "../services/api";
 
-function TaskForm({ onResult }) {
+function TaskForm({ onResult, onTaskCompleted }) {
 
     const [task, setTask] = useState("");
 
@@ -15,6 +15,7 @@ function TaskForm({ onResult }) {
             });
 
             onResult(response.data);
+            onTaskCompleted();
             console.log("Response received:");
             console.log(response.data);
 
