@@ -1,58 +1,40 @@
 function HistoryTable({ history }) {
+  if (!history || history.length === 0) {
+    return null;
+  }
 
-    if (!history || history.length === 0) {
-        return null;
-    }
+  return (
+    <div className="card mt-4 shadow-sm">
+      <div className="card-body">
+        <h4>Task History</h4>
 
-    return (
+        <table className="table table-striped">
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>Task</th>
+              <th>Tool</th>
+              <th>Status</th>
+            </tr>
+          </thead>
 
-        <div className="card mt-4 shadow-sm">
+          <tbody>
+            {history.map((item) => (
+              <tr key={item.id}>
+                <td>{item.id}</td>
 
-            <div className="card-body">
+                <td>{item.task}</td>
 
-                <h4>Task History</h4>
+                <td>{item.tool}</td>
 
-                <table className="table table-striped">
-
-                    <thead>
-
-                        <tr>
-                            <th>ID</th>
-                            <th>Task</th>
-                            <th>Tool</th>
-                            <th>Status</th>
-                        </tr>
-
-                    </thead>
-
-                    <tbody>
-
-                        {history.map((item) => (
-
-                            <tr key={item.id}>
-
-                                <td>{item.id}</td>
-
-                                <td>{item.task}</td>
-
-                                <td>{item.tool}</td>
-
-                                <td>{item.status}</td>
-
-                            </tr>
-
-                        ))}
-
-                    </tbody>
-
-                </table>
-
-            </div>
-
-        </div>
-
-    );
-
+                <td>{item.status}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  );
 }
 
 export default HistoryTable;

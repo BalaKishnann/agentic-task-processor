@@ -4,19 +4,11 @@ from app.tools.base_tool import BaseTool
 
 class TimeTool(BaseTool):
 
-    @property
-    def name(self):
-        return "Time Tool"
-
     def can_handle(self, task: str):
 
         task = task.lower()
 
-        keywords = [
-            "time",
-            "current time",
-            "what time"
-        ]
+        keywords = ["time", "current time", "what time"]
 
         return any(keyword in task for keyword in keywords)
 
@@ -28,11 +20,7 @@ class TimeTool(BaseTool):
 
         trace.add("Current time generated.")
 
-        return {
-            "tool": self.name,
-            "status": "SUCCESS",
-            "result": {
-                "value": current_time
-            },
-            "trace": trace.get_trace()
-        }
+        return self.success(
+            {"value": current_time},
+            trace,
+        )

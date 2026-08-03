@@ -1,48 +1,71 @@
-import { useState, useEffect } from "react";
+import { useEffect } from "react";
+import { ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 import Header from "./components/Header";
 import TaskForm from "./components/TaskForm";
 import ResultCard from "./components/ResultCard";
 import TracePanel from "./components/TracePanel";
-
-import { getHistory } from "./services/historyService";
 import HistoryTable from "./components/HistoryTable";
+import ErrorBoundary from "./components/ErrorBoundary";
+
+import { TaskProvider, useTask } from "./context/TaskContext";
+
+function AppContent() {
+  const { result, history, loading, error, loadHistory, clearError } =
+    useTask();
+
+  useEffect(() => {
+    loadHistory();
+  }, [loadHistory]);
+
+  return (
+    <div className="container mt-5">
+      <Header />
+
+      <ErrorBoundary message="The task form ran into a problem.">
+        <TaskForm />
+      </ErrorBoundary>
+
+      {error && (
+        <div
+          className="alert alert-danger mt-3 d-flex justify-content-between align-items-center"
+          role="alert"
+        >
+          <span>{error}</span>
+          <button
+            className="btn-close"
+            onClick={clearError}
+            aria-label="Dismiss"
+          ></button>
+        </div>
+      )}
+
+      <ErrorBoundary message="Couldn't display the result.">
+        <ResultCard result={result} />
+      </ErrorBoundary>
+
+      <ErrorBoundary message="Couldn't display the execution trace.">
+        <TracePanel trace={result?.trace} />
+      </ErrorBoundary>
+
+      <ErrorBoundary message="Couldn't display task history.">
+        <HistoryTable history={history} />
+      </ErrorBoundary>
+
+      <ToastContainer position="top-right" autoClose={3000} />
+    </div>
+  );
+}
 
 function App() {
-
-    const [result, setResult] = useState(null);
-    const [history, setHistory] = useState([]);
-
-        async function loadHistory() {
-        const data = await getHistory();
-        setHistory(data);
-    }
-
-    useEffect(() => {
-        loadHistory();
-    }, []);
-
-    return (
-
-        <div className="container mt-5">
-
-            <Header />
-
-            <TaskForm
-                onResult={setResult}
-                onTaskCompleted={loadHistory}
-            />
-
-            <ResultCard result={result} />
-
-            <TracePanel trace={result?.trace} />
-
-            <HistoryTable history={history} />
-
-        </div>
-
-    );
-
+  return (
+    <ErrorBoundary message="The app ran into an unexpected error.">
+      <TaskProvider>
+        <AppContent />
+      </TaskProvider>
+    </ErrorBoundary>
+  );
 }
 
 export default App;

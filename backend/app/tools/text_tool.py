@@ -9,9 +9,11 @@ class TextTool(BaseTool):
 
         return "text" in task or "uppercase" in task
 
-    def execute(self, task: str):
+    def execute(self, task: str, trace):
 
-        return {
-            "tool": "Text",
-            "message": f"Text tool received: {task}"
-        }
+        trace.add("Text tool processing request.")
+
+        return self.success(
+            {"message": f"Text tool received: {task}"},
+            trace,
+        )

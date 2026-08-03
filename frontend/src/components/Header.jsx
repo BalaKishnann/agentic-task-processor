@@ -3,9 +3,7 @@ function Header() {
     <div className="text-center mb-4">
       <h1>Agentic Task Processor</h1>
 
-      <p className="text-secondary">
-        Enterprise AI Agent Demo
-      </p>
+      <p className="text-secondary">Enterprise AI Agent Demo</p>
 
       <hr />
     </div>

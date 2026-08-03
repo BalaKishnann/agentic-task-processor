@@ -1,61 +1,80 @@
 import { useState } from "react";
-import API from "../services/api";
+import { useTask } from "../context/TaskContext";
 
-function TaskForm({ onResult, onTaskCompleted }) {
+const MAX_TASK_LENGTH = 500;
 
-    const [task, setTask] = useState("");
+function TaskForm() {
+  const { submitTask, loading } = useTask();
 
-    async function executeTask() {
+  const [task, setTask] = useState("");
+  const [validationError, setValidationError] = useState("");
 
-        try {
-            console.log("Sending request...");
+  function validateTask(value) {
+    const trimmed = value.trim();
 
-            const response = await API.post("/tasks", {
-                task: task
-            });
+    if (trimmed.length === 0) {
+      return "Please enter a task before submitting.";
+    }
+    if (trimmed.length > MAX_TASK_LENGTH) {
+      return `Task must be under ${MAX_TASK_LENGTH} characters.`;
+    }
+    return null;
+  }
 
-            onResult(response.data);
-            onTaskCompleted();
-            console.log("Response received:");
-            console.log(response.data);
+  async function handleSubmit() {
+    const error = validateTask(task);
 
-        } catch (error) {
-
-            console.error(error);
-
-        }
-
+    if (error) {
+      setValidationError(error);
+      return;
     }
 
-    return (
+    setValidationError("");
+    await submitTask(task.trim());
+    setTask("");
+  }
 
-        <div className="card shadow-sm">
+  function handleKeyDown(e) {
+    if (e.key === "Enter" && !loading) {
+      handleSubmit();
+    }
+  }
 
-            <div className="card-body">
+  return (
+    <div className="card shadow-sm">
+      <div className="card-body">
+        <h4>Enter Task</h4>
 
-                <h4>Enter Task</h4>
+        <input
+          type="text"
+          className={`form-control ${validationError ? "is-invalid" : ""}`}
+          placeholder="Example: Calculate 250 * 8"
+          value={task}
+          maxLength={MAX_TASK_LENGTH}
+          onChange={(e) => {
+            setTask(e.target.value);
+            if (validationError) setValidationError("");
+          }}
+          onKeyDown={handleKeyDown}
+          disabled={loading}
+        />
 
-                <input
-                    type="text"
-                    className="form-control"
-                    placeholder="Example: Calculate 250 * 8"
-                    value={task}
-                    onChange={(e) => setTask(e.target.value)}
-                />
+        {validationError && (
+          <div className="text-danger mt-2" role="alert">
+            {validationError}
+          </div>
+        )}
 
-                <button
-                    className="btn btn-primary mt-3"
-                    onClick={executeTask}
-                >
-                    Execute Task
-                </button>
-
-            </div>
-
-        </div>
-
-    );
-
+        <button
+          className="btn btn-primary mt-3"
+          onClick={handleSubmit}
+          disabled={loading}
+        >
+          {loading ? "Processing..." : "Execute Task"}
+        </button>
+      </div>
+    </div>
+  );
 }
 
 export default TaskForm;

@@ -1,0 +1,33 @@
+repos:
+
+  - repo: https://github.com/psf/black
+    rev: 24.10.0
+    hooks:
+      - id: black
+        files: ^backend/
+
+  - repo: local
+    hooks:
+      - id: pylint
+        name: pylint
+        entry: backend/.venv/Scripts/python.exe -m pylint
+        language: system
+        files: ^backend/.*\.py$
+        args:
+          - "--init-hook=import sys; sys.path.insert(0, 'backend')"
+          - "--disable=missing-docstring,missing-module-docstring,too-few-public-methods,broad-exception-caught,redefined-outer-name,unused-argument,wrong-import-order,invalid-name,no-member,not-callable,trailing-newlines,line-too-long,protected-access,unnecessary-pass"
+          
+  - repo: local
+    hooks:
+      - id: oxlint
+        name: oxlint
+        entry: npx oxlint
+        language: system
+        files: ^frontend/src/.*\.(js|jsx)$
+        pass_filenames: false
+
+  - repo: https://github.com/pre-commit/mirrors-prettier
+    rev: v4.0.0-alpha.8
+    hooks:
+      - id: prettier
+        files: ^frontend/src/.*\.(js|jsx|css|json)$
