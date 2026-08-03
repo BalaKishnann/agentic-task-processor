@@ -12,8 +12,16 @@ import ErrorBoundary from "./components/ErrorBoundary";
 import { TaskProvider, useTask } from "./context/TaskContext";
 
 function AppContent() {
-  const { result, history, loading, error, loadHistory, clearError } =
-    useTask();
+  const {
+    result,
+    history,
+    loading,
+    error,
+    loadHistory,
+    clearHistory,
+    deleteHistoryEntry,
+    clearError,
+  } = useTask();
 
   useEffect(() => {
     loadHistory();
@@ -40,6 +48,29 @@ function AppContent() {
           ></button>
         </div>
       )}
+
+      <ErrorBoundary message="Couldn't display task history.">
+        <div className="d-flex justify-content-between align-items-center mt-4 mb-2">
+          <h5 className="mb-0">Task History</h5>
+          {history.length > 0 && (
+            <button
+              className="btn btn-sm btn-outline-danger"
+              onClick={() => {
+                if (
+                  window.confirm(
+                    "Clear all task history? This cannot be undone.",
+                  )
+                ) {
+                  clearHistory();
+                }
+              }}
+            >
+              Clear History
+            </button>
+          )}
+        </div>
+        <HistoryTable history={history} onDeleteEntry={deleteHistoryEntry} />
+      </ErrorBoundary>
 
       <ErrorBoundary message="Couldn't display the result.">
         <ResultCard result={result} />

@@ -1,5 +1,9 @@
 import { createContext, useContext, useReducer, useCallback } from "react";
-import { getHistory } from "../services/historyService";
+import {
+  getHistory,
+  clearHistory as clearHistoryAPI,
+  deleteHistoryEntry as deleteHistoryEntryAPI,
+} from "../services/historyService";
 import API from "../services/api";
 
 const TaskContext = createContext(null);
@@ -21,7 +25,6 @@ function taskReducer(state, action) {
         ...state,
         loading: false,
         result: action.payload,
-        // Reconcile the optimistic entry with the real response.
         history: state.history.map((item) =>
           item.id === action.optimisticId
             ? { ...action.payload, id: action.payload.id ?? item.id }
@@ -34,8 +37,6 @@ function taskReducer(state, action) {
         ...state,
         loading: false,
         error: action.payload,
-        // Mark the optimistic entry as failed rather than removing it,
-        // so the user sees what was attempted and that it didn't work.
         history: state.history.map((item) =>
           item.id === action.optimisticId
             ? { ...item, status: "FAILED", message: action.payload }
@@ -51,6 +52,15 @@ function taskReducer(state, action) {
 
     case "SET_HISTORY":
       return { ...state, history: action.payload };
+
+    case "CLEAR_HISTORY":
+      return { ...state, history: [] };
+
+    case "REMOVE_HISTORY_ENTRY":
+      return {
+        ...state,
+        history: state.history.filter((item) => item.id !== action.payload),
+      };
 
     case "CLEAR_ERROR":
       return { ...state, error: null };
@@ -76,9 +86,6 @@ export function TaskProvider({ children }) {
   }, []);
 
   const submitTask = useCallback(async (taskText) => {
-    // Optimistic entry: shows in the history list immediately, before
-    // the request resolves, so the UI doesn't feel like it's waiting
-    // on a round-trip before anything happens.
     const optimisticId = `optimistic-${Date.now()}`;
 
     dispatch({
@@ -111,6 +118,30 @@ export function TaskProvider({ children }) {
     }
   }, []);
 
+  const clearHistory = useCallback(async () => {
+    try {
+      await clearHistoryAPI();
+      dispatch({ type: "CLEAR_HISTORY" });
+    } catch (err) {
+      dispatch({
+        type: "SUBMIT_ERROR",
+        payload: "Failed to clear task history.",
+      });
+    }
+  }, []);
+
+  const deleteHistoryEntry = useCallback(async (id) => {
+    try {
+      await deleteHistoryEntryAPI(id);
+      dispatch({ type: "REMOVE_HISTORY_ENTRY", payload: id });
+    } catch (err) {
+      dispatch({
+        type: "SUBMIT_ERROR",
+        payload: "Failed to delete task history entry.",
+      });
+    }
+  }, []);
+
   const clearError = useCallback(() => {
     dispatch({ type: "CLEAR_ERROR" });
   }, []);
@@ -122,6 +153,8 @@ export function TaskProvider({ children }) {
     error: state.error,
     submitTask,
     loadHistory,
+    clearHistory,
+    deleteHistoryEntry,
     clearError,
   };
 
